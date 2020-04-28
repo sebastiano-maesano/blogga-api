@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -15,15 +16,17 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "user")
 public class User {
-    @Id
-    private int id;
 
-    @Column(name = "username")
+    @Id
+    @GeneratedValue
+    private long id;
+
+    @Column(name = "username", length = 50)
     private String userName;
 
     @Column(name = "password")
     private String password;
 
-    @Column(name = "email")
+    @Column(name = "email", length = 100)
     private String email;
 }
