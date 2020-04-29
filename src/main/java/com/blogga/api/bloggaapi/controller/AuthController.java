@@ -1,6 +1,8 @@
 package com.blogga.api.bloggaapi.controller;
 
+import com.blogga.api.bloggaapi.config.SecurityConfig;
 import com.blogga.api.bloggaapi.exception.BadRequestException;
+import com.blogga.api.bloggaapi.model.User;
 import com.blogga.api.bloggaapi.repository.UserRepository;
 import com.blogga.api.bloggaapi.request.LoginRequest;
 import com.blogga.api.bloggaapi.request.RegisterRequest;
@@ -24,6 +26,8 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private SecurityConfig securityConfig;
 
     @PostMapping("/login")
     public String login(@RequestBody LoginRequest authRequest) throws BadRequestException {
@@ -37,7 +41,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody RegisterRequest request) throws BadRequestException {
-        return "qualcosa farò";
+    public void register(@RequestBody RegisterRequest request) throws BadRequestException {
+        String encriptedPassword = this.securityConfig.passwordEncoder().encode(request.getPassword());
+        User user = new User(0, request.getUserName(), encriptedPassword, request.getEmail());
+        this.userRepository.save(user);
     }
 }
