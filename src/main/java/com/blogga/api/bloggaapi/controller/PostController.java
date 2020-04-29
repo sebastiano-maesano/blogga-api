@@ -7,6 +7,8 @@ import com.blogga.api.bloggaapi.model.Post;
 import com.blogga.api.bloggaapi.repository.PostRepository;
 import com.blogga.api.bloggaapi.request.CreatePostRequest;
 import com.blogga.api.bloggaapi.request.UpdatePostRequest;
+import com.blogga.api.bloggaapi.response.HttpResponse;
+import com.blogga.api.bloggaapi.service.HttpResponderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +26,7 @@ public class PostController {
     PostRepository postRepository;
 
     @PostMapping("/post")
-    public Post create(@RequestBody CreatePostRequest request) throws BadRequestException {
+    public HttpResponse<Post> create(@RequestBody CreatePostRequest request) throws BadRequestException {
         Post post = new Post();
 
         post.setName(request.getName());
@@ -36,7 +38,7 @@ public class PostController {
             throw new BadRequestException(e.getMessage());
         }
 
-        return post;
+        return new HttpResponderService<Post>().ok(post);
     }
 
     @GetMapping("/posts")
