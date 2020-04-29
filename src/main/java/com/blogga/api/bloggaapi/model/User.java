@@ -21,12 +21,12 @@ public class User {
     @GeneratedValue
     private long id;
 
-    @Column(name = "username", length = 50)
+    @Column(name = "username", length = 50, nullable = false)
     private String userName;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "email", length = 100)
+    @Column(name = "email", length = 100, nullable = false)
     private String email;
 }

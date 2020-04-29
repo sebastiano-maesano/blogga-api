@@ -43,7 +43,17 @@ public class AuthController {
     @PostMapping("/register")
     public void register(@RequestBody RegisterRequest request) throws BadRequestException {
         String encriptedPassword = this.securityConfig.passwordEncoder().encode(request.getPassword());
-        User user = new User(0, request.getUserName(), encriptedPassword, request.getEmail());
-        this.userRepository.save(user);
+        User user = new User();
+
+        user.setPassword(encriptedPassword);
+        user.setEmail(request.getEmail());
+        user.setUserName(request.getUserName());
+
+        try {
+            this.userRepository.save(user);
+        } catch (Exception e) {
+            throw new BadRequestException(e.getMessage());
+        }
+
     }
 }
