@@ -42,34 +42,36 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public List<Post> readList() {
-        return postRepository.findAll();
+    public HttpResponse<List<Post>> readList() {
+        return new HttpResponderService<List<Post>>().ok(postRepository.findAll());
     }
 
     @GetMapping("/post/{id}")
-    public Post readPost(@PathVariable("id") Long id) {
-        return postRepository.getOne(id);
+    public HttpResponse<Post> readPost(@PathVariable("id") Long id) {
+        return new HttpResponderService<Post>().ok(postRepository.getOne(id));
     }
 
     @PutMapping("/post/{id}")
-    public Post update(@PathVariable("id") Long id, @RequestBody UpdatePostRequest request) {
+    public HttpResponse<Post> update(@PathVariable("id") Long id, @RequestBody UpdatePostRequest request) {
 
         Post post = postRepository.findById(id).get();
 
-        if (request.getBody() != null) {
-            post.setBody(request.getBody());
+        if (request.getName() != null) {
+            post.setName(request.getName());
         }
 
         if (request.getBody() != null) {
             post.setBody(request.getBody());
         }
 
-        return post;
+        postRepository.save(post);
+        return new HttpResponderService<Post>().ok(post);
     }
 
     @DeleteMapping("/post/{id}")
-    public void delete(@PathVariable("id") Long id) {
+    public HttpResponse<Post> delete(@PathVariable("id") Long id) {
         postRepository.deleteById(id);
+        return new HttpResponderService<Post>().ok(null);
     }
 
 }
