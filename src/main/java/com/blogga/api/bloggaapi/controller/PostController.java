@@ -8,6 +8,7 @@ import com.blogga.api.bloggaapi.repository.PostRepository;
 import com.blogga.api.bloggaapi.request.CreatePostRequest;
 import com.blogga.api.bloggaapi.request.UpdatePostRequest;
 import com.blogga.api.bloggaapi.response.HttpResponse;
+import com.blogga.api.bloggaapi.service.CustomUserDetailsService;
 import com.blogga.api.bloggaapi.service.HttpResponderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +18,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PostController {
 
     @Autowired
-    PostRepository postRepository;
+    private PostRepository postRepository;
+    @Autowired
+    private CustomUserDetailsService userService;
 
     @PostMapping("/post")
-    public HttpResponse<Post> create(@RequestBody CreatePostRequest request) throws BadRequestException {
+    public HttpResponse<Post> create(@RequestBody CreatePostRequest request,
+            @RequestHeader(name = "Authorization") String token) throws BadRequestException {
         Post post = new Post();
 
         post.setName(request.getName());
         post.setBody(request.getBody());
+        post.setUser(userService.getUserByToken(token));
 
         try {
             postRepository.save(post);
