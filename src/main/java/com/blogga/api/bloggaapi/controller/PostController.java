@@ -2,6 +2,8 @@ package com.blogga.api.bloggaapi.controller;
 
 import java.util.List;
 
+import javax.persistence.criteria.Selection;
+
 import com.blogga.api.bloggaapi.exception.BadRequestException;
 import com.blogga.api.bloggaapi.model.Comment;
 import com.blogga.api.bloggaapi.model.Post;
@@ -14,6 +16,7 @@ import com.blogga.api.bloggaapi.request.CreatePostRequest;
 import com.blogga.api.bloggaapi.request.UpdatePostRequest;
 import com.blogga.api.bloggaapi.response.HttpResponse;
 import com.blogga.api.bloggaapi.service.HttpResponderService;
+import com.blogga.api.bloggaapi.service.PostsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,6 +38,8 @@ public class PostController {
     private UserRepository userRepository;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private PostsService postsService;
 
     /**
      * Posts methods
@@ -109,6 +114,12 @@ public class PostController {
         commentRepository.save(comment);
 
         return new HttpResponderService<Comment>().ok(comment);
+    }
+
+    @GetMapping("/post/{postId}/comments")
+    public HttpResponse<Selection<Comment>> readPostComments(@PathVariable("postId") Long postId) {
+        Selection<Comment> comments = this.postsService.getAllPostComments(postId);
+        return new HttpResponderService<Selection<Comment>>().ok(comments);
     }
 
 }
