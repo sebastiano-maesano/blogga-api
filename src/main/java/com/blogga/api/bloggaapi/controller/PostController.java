@@ -5,20 +5,21 @@ import java.util.List;
 import com.blogga.api.bloggaapi.exception.BadRequestException;
 import com.blogga.api.bloggaapi.model.Post;
 import com.blogga.api.bloggaapi.repository.PostRepository;
+import com.blogga.api.bloggaapi.repository.UserRepository;
 import com.blogga.api.bloggaapi.request.CreatePostRequest;
 import com.blogga.api.bloggaapi.request.UpdatePostRequest;
 import com.blogga.api.bloggaapi.response.HttpResponse;
-import com.blogga.api.bloggaapi.service.CustomUserDetailsService;
 import com.blogga.api.bloggaapi.service.HttpResponderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,16 +28,16 @@ public class PostController {
     @Autowired
     private PostRepository postRepository;
     @Autowired
-    private CustomUserDetailsService userService;
+    private UserRepository userRepository;
 
     @PostMapping("/post")
     public HttpResponse<Post> create(@RequestBody CreatePostRequest request,
-            @RequestHeader(name = "Authorization") String token) throws BadRequestException {
+            @AuthenticationPrincipal UserDetails userDetails) throws BadRequestException {
         Post post = new Post();
 
         post.setName(request.getName());
         post.setBody(request.getBody());
-        post.setUser(userService.getUserByToken(token));
+        post.setUser(userRepository.findByUserName(userDetails.getUsername()));
 
         try {
             postRepository.save(post);
