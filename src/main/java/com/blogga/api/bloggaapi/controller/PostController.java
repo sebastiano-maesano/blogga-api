@@ -3,9 +3,13 @@ package com.blogga.api.bloggaapi.controller;
 import java.util.List;
 
 import com.blogga.api.bloggaapi.exception.BadRequestException;
+import com.blogga.api.bloggaapi.model.Comment;
 import com.blogga.api.bloggaapi.model.Post;
+import com.blogga.api.bloggaapi.model.User;
+import com.blogga.api.bloggaapi.repository.CommentRepository;
 import com.blogga.api.bloggaapi.repository.PostRepository;
 import com.blogga.api.bloggaapi.repository.UserRepository;
+import com.blogga.api.bloggaapi.request.CreateCommentRequest;
 import com.blogga.api.bloggaapi.request.CreatePostRequest;
 import com.blogga.api.bloggaapi.request.UpdatePostRequest;
 import com.blogga.api.bloggaapi.response.HttpResponse;
@@ -29,6 +33,12 @@ public class PostController {
     private PostRepository postRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+
+    /**
+     * Posts methods
+     */
 
     @PostMapping("/post")
     public HttpResponse<Post> create(@RequestBody CreatePostRequest request,
@@ -79,6 +89,26 @@ public class PostController {
     public HttpResponse<Post> delete(@PathVariable("id") Long id) {
         postRepository.deleteById(id);
         return new HttpResponderService<Post>().ok(null);
+    }
+
+    /**
+     * Comments methods
+     */
+
+    @PostMapping("/post/{postId}/comment")
+    public HttpResponse<Comment> createComment(@PathVariable("postId") Long postId,
+            @RequestBody CreateCommentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        Comment comment = new Comment();
+        User user = userRepository.findByUserName(userDetails.getUsername());
+        Post post = postRepository.findById(postId).get();
+
+        comment.setLabel(request.getLabel());
+        comment.setPost(post);
+        comment.setUser(user);
+
+        commentRepository.save(comment);
+
+        return new HttpResponderService<Comment>().ok(comment);
     }
 
 }
