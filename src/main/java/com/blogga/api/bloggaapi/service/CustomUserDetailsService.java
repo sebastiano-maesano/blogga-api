@@ -10,16 +10,23 @@ import java.util.ArrayList;
 
 import com.blogga.api.bloggaapi.model.User;
 import com.blogga.api.bloggaapi.repository.UserRepository;
+import com.blogga.api.bloggaapi.util.JwtUtil;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository repository;
+    @Autowired
+    private JwtUtil jwt;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByUserName(username);
         return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(),
                 new ArrayList<>());
+    }
+
+    public User getUserByToken(String token) {
+        return repository.findByUserName(jwt.extractUsername(token.substring(7)));
     }
 }
