@@ -11,6 +11,7 @@ import com.blogga.api.bloggaapi.repository.PostRepository;
 import com.blogga.api.bloggaapi.repository.UserRepository;
 import com.blogga.api.bloggaapi.request.CreateCommentRequest;
 import com.blogga.api.bloggaapi.request.CreatePostRequest;
+import com.blogga.api.bloggaapi.request.UpdateCommentRequest;
 import com.blogga.api.bloggaapi.request.UpdatePostRequest;
 import com.blogga.api.bloggaapi.response.HttpResponse;
 import com.blogga.api.bloggaapi.service.HttpResponderService;
@@ -116,6 +117,17 @@ public class PostController {
         Post post = postRepository.findById(postId).get();
         List<Comment> comments = this.commentRepository.findByPost(post);
         return new HttpResponderService<List<Comment>>().ok(comments);
+    }
+
+    @PutMapping("/post/{postId}/comment/{commentId}")
+    public HttpResponse<Comment> updatePostComment(@PathVariable("postId") Long postId,
+            @PathVariable("commentId") Long commentId, @RequestBody UpdateCommentRequest request) {
+
+        Comment comment = commentRepository.findById(commentId).get();
+        comment.setLabel(request.getLabel());
+
+        commentRepository.save(comment);
+        return new HttpResponderService<Comment>().ok(comment);
     }
 
 }
