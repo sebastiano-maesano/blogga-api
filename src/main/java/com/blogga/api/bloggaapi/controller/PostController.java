@@ -130,4 +130,11 @@ public class PostController {
         return new HttpResponderService<Comment>().ok(comment);
     }
 
+    @DeleteMapping("/post/{postId}/comment/{commentId}")
+    public HttpResponse<Comment> deletePostComment(@PathVariable("postId") Long postId,
+            @PathVariable("commentId") Long commentId) {
+        commentRepository.deleteById(commentId);
+        return new HttpResponderService<Comment>().ok(null);
+    }
+
 }
